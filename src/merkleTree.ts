@@ -68,10 +68,14 @@ export default class MerkleTree {
     }
 }
 
+const AAA = 10000;
+let z: Buffer[] = new Array();
+for (let i = 0; i < AAA; i++){
+    z.push(Buffer.alloc(1, i));
+}
 
-let z = [Buffer.alloc(1, "1"), Buffer.alloc(1, "2"), Buffer.alloc(1, "3"), Buffer.alloc(1, "4"), Buffer.alloc(1, "5")];
 let a = new MerkleTree(z);
 a.build();
-let proof = a.generateProof(z[0])
+let proof = a.generateProof(z[1146])
 console.log(proof);
-console.log(a.verifyProof(proof, z[0]));
+console.log(a.verifyProof(proof, z[1146]));
