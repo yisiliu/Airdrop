@@ -1,11 +1,11 @@
-import Web3 from 'web3'
+import {soliditySha3} from 'web3-utils'
 import { buf2hex } from './helpers'
 
-export default class MerkleTree {
+class MerkleTree {
   private layers: string[][] = []
 
-  constructor(leaves: string[], private algorithm: (...str: string[]) => string) {
-    this.build(leaves)
+  constructor(private leaves: string[], private algorithm: (...str: string[]) => string) {
+    this.build(this.leaves)
   }
 
   private hash(x: string) {
@@ -38,7 +38,7 @@ export default class MerkleTree {
     this.layers.length = 0
 
     // build the new tree
-    this.layers[0] = leaves.map(this.hash)
+    this.layers[0] = leaves.map(this.hash.bind(this))
     for (let layer = 0; this.layers[layer].length > 1; layer += 1) {
       this.layers[layer + 1] = this.layers[layer]
         .map((x, i, array) => {
@@ -80,8 +80,8 @@ for (let i = 0; i < size; i++) {
   leaves.push(Buffer.alloc(1, i))
 }
 
-const tree = new MerkleTree(leaves.map(buf2hex), (Web3.utils.soliditySha3 as unknown) as (...str: string[]) => string)
-const proof = tree.generateProof(buf2hex(leaves[1146]))
+const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
+const proof = tree.generateProof(buf2hex(leaves[22]))
 
 console.log(proof)
-console.log(tree.verifyProof(proof, buf2hex(leaves[1146])))
+console.log(tree.verifyProof(proof, buf2hex(leaves[22])))
