@@ -3,5 +3,5 @@ export function buf2hex(b: Buffer) {
 }
 
 export function hex2buf(h: string) {
-  throw new Error('to be implemeted')
+  return Buffer.from(h.replace(/^0x/i, ''), 'hex')
 }

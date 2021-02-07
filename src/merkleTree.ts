@@ -1,5 +1,5 @@
-import {soliditySha3} from 'web3-utils'
-import { buf2hex } from './helpers'
+import {randomHex, soliditySha3} from 'web3-utils'
+import { buf2hex, hex2buf } from './helpers'
 
 class MerkleTree {
   private layers: string[][] = []
@@ -57,9 +57,9 @@ class MerkleTree {
     let index: number = this.layers[0].indexOf(this.hash(x))
     if (index === -1) throw new Error(`Failed to generate proof for ${x}`)
     return this.layers.reduce((accumulator, layer) => {
-      accumulator.push(this.getNeighbor(index, layer))
+      const neighbor = this.getNeighbor(index, layer)
       index = ~~(index / 2)
-      return accumulator
+      return [...accumulator,neighbor]
     }, [])
   }
 
@@ -73,15 +73,39 @@ class MerkleTree {
   }
 }
 
-const size = 10000
-const leaves: Buffer[] = []
 
-for (let i = 0; i < size; i++) {
-  leaves.push(Buffer.alloc(1, i))
+function test_basic() {
+    const size = 3000
+    const leaves: Buffer[] = []
+    
+    for (let i = 0; i < size; i++) {
+      leaves.push(Buffer.alloc(1, i))
+    }
+    
+    const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
+    const proof = tree.generateProof(buf2hex(leaves[614]))
+    
+    console.log(proof)
+    console.log(tree.verifyProof(proof, buf2hex(leaves[614])))
+    
 }
 
-const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
-const proof = tree.generateProof(buf2hex(leaves[22]))
+function test_address() {
+    const size = 3000
+    const leaves: Buffer[] = []
 
-console.log(proof)
-console.log(tree.verifyProof(proof, buf2hex(leaves[22])))
+    for (let i = 0; i < size; i += 1) {
+        const address =randomHex(20) // 160 bits
+        const amount =randomHex(12) // 96 bits
+        leaves.push(Buffer.concat([hex2buf(address), hex2buf(amount)]))
+    }
+
+    const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
+    const proof = tree.generateProof(buf2hex(leaves[614]))
+
+    console.log(proof)
+    console.log(tree.verifyProof(proof, buf2hex(leaves[614])))
+}
+
+test_basic()
+test_address()
