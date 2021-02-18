@@ -68,14 +68,26 @@ export default class MerkleTree {
     }
 }
 
-const AAA = 10000;
-let z: Buffer[] = new Array();
+const web3 = new Web3();
+const AAA = 15;
+let addrs: Buffer[] = new Array();
 for (let i = 0; i < AAA; i++){
-    z.push(Buffer.alloc(1, i));
+    let addr = web3.eth.accounts.create(i.toString());
+    console.log(addr);
+    addrs.push(Buffer.alloc(1, addr));
+}
+if (AAA % 2 != 0) addrs.push(addrs[addrs.length-1]);
+
+let z:Buffer[] = new Array();
+for (let i = 0; i < addrs.length; i++) {
+    let combined = sha3(addrs[i], i);
+    z.push(Buffer.alloc(1, addrs[i]));
 }
 
 let a = new MerkleTree(z);
 a.build();
-let proof = a.generateProof(z[1146])
+let leaf:Buffer = Buffer.alloc(1, sha3(addrs[0], 0));
+let proof = a.generateProof(leaf)
+console.log(addrs);
 console.log(proof);
-console.log(a.verifyProof(proof, z[1146]));
+console.log(a.verifyProof(proof, leaf));
