@@ -56,7 +56,7 @@ class MerkleTree {
   public generateProof(x: string): string[] {
     let index: number = this.layers[0].indexOf(this.hash(x))
     if (index === -1) throw new Error(`Failed to generate proof for ${x}`)
-    return this.layers.reduce((accumulator, layer) => {
+    return this.layers.slice(0, this.layers.length-1).reduce((accumulator, layer) => {
       const neighbor = this.getNeighbor(index, layer)
       index = ~~(index / 2)
       return [...accumulator,neighbor]
@@ -65,7 +65,7 @@ class MerkleTree {
 
   public verifyProof(proof: string[], target: string): boolean {
     let computed_hash = this.hash(target)
-    for (let i = 0; i < proof.length - 1; i++) {
+    for (let i = 0; i < proof.length; i++) {
       if (computed_hash <= proof[i]) computed_hash = this.combine_hash(computed_hash, proof[i])
       else computed_hash = this.combine_hash(proof[i], computed_hash)
     }
@@ -85,7 +85,9 @@ function test_basic() {
     const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
     const proof = tree.generateProof(buf2hex(leaves[614]))
     
+    console.log(tree.root)
     console.log(proof)
+    console.log(buf2hex(leaves[614]))
     console.log(tree.verifyProof(proof, buf2hex(leaves[614])))
     
 }
@@ -103,7 +105,9 @@ function test_address() {
     const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
     const proof = tree.generateProof(buf2hex(leaves[614]))
 
+    console.log(tree.root)
     console.log(proof)
+    console.log(buf2hex(leaves[614]))
     console.log(tree.verifyProof(proof, buf2hex(leaves[614])))
 }
 
