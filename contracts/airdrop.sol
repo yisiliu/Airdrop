@@ -20,27 +20,34 @@ contract Airdrop {
 
     address creator;
     bytes32 merkleRoot;
-    uint256 total;
     Info info;
     mapping(address => uint256) claimed;
 
+    event Recharged(uint256 total, uint256 timestamp);
     event Claimed(uint256 amount, uint256 timestamp);
+    event Withdrawed(uint256 left, uint256 timestamp);
 
     modifier creatorOnly {
         require(msg.sender == creator, "Not Authorized");
         _;
     }
     
-    constructor (address _token_address, bytes32 _merkleRoot, uint256 _total, uint256 _start_time, uint256 _end_time) {
+    constructor (address _token_address, bytes32 _merkleRoot, uint256 _start_time, uint256 _end_time) {
         require(validRange(48, _start_time), "Invalid Start Time");
         require(validRange(48, _end_time), "Invalid End Time");
 
         merkleRoot = _merkleRoot;
-        total = _total;
         info.start_time = uint48(_start_time);
         info.end_time = uint48(_end_time);
         info.token_address = _token_address;
         creator = msg.sender;
+    }
+
+    function recharge (uint256 _total) public creatorOnly {
+        Info memory _info = info;
+        require(IERC20(_info.token_address).allowance(msg.sender, address(this)) >= _total, "WE NEED MORE!!!!!");
+        IERC20(_info.token_address).safeTransferFrom(msg.sender, address(this), _total);
+        emit Recharged(_total, block.timestamp);
     }
 
     function check(address claimer, uint256 amount, bytes32[] calldata merkleProof) external view
@@ -58,6 +65,15 @@ contract Airdrop {
         claimed[msg.sender] = amount;
         IERC20(info.token_address).transfer(msg.sender, amount * (10 ** ERC20(info.token_address).decimals()));
         emit Claimed(amount, block.timestamp); 
+    }
+
+    function withdraw() public creatorOnly {
+        Info memory _info = info;
+        require(block.timestamp > _info.end_time, "Not Expired");
+        uint256 left = IERC20(_info.token_address).balanceOf(address(this));
+        require(left > 0, "What?");
+        IERC20(_info.token_address).transfer(msg.sender, left);
+        emit Withdrawed(left, block.timestamp);
     }
     
     function validRange (uint16 size, uint256 data) internal pure returns (bool ifValid) {
