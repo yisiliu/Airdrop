@@ -93,7 +93,7 @@ function test_basic() {
 }
 
 function test_address() {
-    const size = 3000
+    const size = 20000
     const leaves: Buffer[] = []
 
     for (let i = 0; i < size; i += 1) {
