@@ -1,5 +1,5 @@
 export function buf2hex(b: Buffer) {
-  return b.toString('hex')
+  return '0x'+b.toString('hex')
 }
 
 export function hex2buf(h: string) {
