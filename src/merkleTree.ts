@@ -1,4 +1,4 @@
-import {randomHex, soliditySha3} from 'web3-utils'
+import { randomHex, soliditySha3 } from 'web3-utils'
 import { buf2hex, hex2buf } from './helpers'
 
 class MerkleTree {
@@ -56,10 +56,10 @@ class MerkleTree {
   public generateProof(x: string): string[] {
     let index: number = this.layers[0].indexOf(this.hash(x))
     if (index === -1) throw new Error(`Failed to generate proof for ${x}`)
-    return this.layers.slice(0, this.layers.length-1).reduce((accumulator, layer) => {
+    return this.layers.slice(0, this.layers.length - 1).reduce((accumulator, layer) => {
       const neighbor = this.getNeighbor(index, layer)
       index = ~~(index / 2)
-      return [...accumulator,neighbor]
+      return [...accumulator, neighbor]
     }, [])
   }
 
@@ -73,44 +73,41 @@ class MerkleTree {
   }
 }
 
-
 function test_basic() {
-    const size = 3000
-    const leaves: Buffer[] = []
-    
-    for (let i = 0; i < size; i++) {
-      leaves.push(Buffer.alloc(1, i))
-    }
-    
-    const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
-    const proof = tree.generateProof(buf2hex(leaves[614]))
-    
-    console.log(tree.root)
-    console.log(proof)
-    console.log(buf2hex(leaves[614]))
-    console.log(tree.verifyProof(proof, buf2hex(leaves[614])))
-    
+  const size = 3000
+  const leaves: Buffer[] = []
+
+  for (let i = 0; i < size; i++) {
+    leaves.push(Buffer.alloc(1, i))
+  }
+
+  const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
+  const proof = tree.generateProof(buf2hex(leaves[614]))
+
+  console.log(tree.root)
+  console.log(proof)
+  console.log(buf2hex(leaves[614]))
+  console.log(tree.verifyProof(proof, buf2hex(leaves[614])))
 }
 
 function test_address() {
-    const size = 3000
-    const leaves: Buffer[] = []
+  const size = 3000
+  const leaves: Buffer[] = []
 
-    for (let i = 0; i < size; i += 1) {
-        const address =randomHex(20) // 160 bits
-        const amount =randomHex(12) // 96 bits
-        leaves.push(Buffer.concat([hex2buf(address), hex2buf(amount)]))
-    }
+  for (let i = 0; i < size; i += 1) {
+    const address = randomHex(20) // 160 bits
+    const amount = randomHex(12) // 96 bits
+    leaves.push(Buffer.concat([hex2buf(address), hex2buf(amount)]))
+  }
 
-    const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
-    const proof = tree.generateProof(buf2hex(leaves[614]))
+  const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
+  const proof = tree.generateProof(buf2hex(leaves[614]))
 
-    console.log(tree.root)
-    console.log(proof)
-    console.log(buf2hex(leaves[614]))
-    console.log(tree.verifyProof(proof, buf2hex(leaves[614])))
+  console.log(tree.root)
+  console.log(proof)
+  console.log(buf2hex(leaves[614]))
+  console.log(tree.verifyProof(proof, buf2hex(leaves[614])))
 }
 
 test_basic()
 test_address()
-

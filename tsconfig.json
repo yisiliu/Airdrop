@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "target": "ES2017",
-        "lib": [],
         "strict": true,
         "esModuleInterop": true,
         "noImplicitAny": true,
