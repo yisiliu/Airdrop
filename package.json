@@ -1,13 +1,9 @@
 {
   "name": "mask-airdrop",
   "version": "1.0.0",
-  "description": "",
   "license": "MIT",
   "author": "Yisi Liu",
   "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "pretest": "mocha",
     "test": "truffle test"
