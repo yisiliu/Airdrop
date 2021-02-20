@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL v3
+// bitmap is taken from uniswap/merkle-distributor
 
 pragma solidity >= 0.6.0 <= 0.8.0;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
@@ -21,7 +22,7 @@ contract Airdrop {
     address creator;
     bytes32 merkleRoot;
     Info info;
-    mapping(address => uint256) claimed;
+    mapping(uint256 => uint256) claimed_bitmap;             // #claimers/256 #claimers%25   source: Uniswap
 
     event Recharged(uint256 total, uint256 timestamp);
     event Claimed(uint256 amount, uint256 timestamp);
@@ -56,15 +57,25 @@ contract Airdrop {
         available = MerkleProof.verify(merkleProof, merkleRoot, leaf);
     }
 
-    function claim(uint256 amount, bytes32[] calldata merkleProof) external {
-        require(claimed[msg.sender] == 0, "Already Claimed");
+    function claim(uint256 index, uint256 amount, bytes32[] calldata merkleProof) external {
+        require(!if_claimed(index), "Already Claimed");
         require(block.timestamp > info.start_time, "Not Started");
         require(block.timestamp < info.end_time, "Expired");
-        bytes32 leaf = keccak256(abi.encodePacked(msg.sender, amount));
+        bytes32 leaf = keccak256(abi.encodePacked(index, msg.sender, amount));
         require(MerkleProof.verify(merkleProof, merkleRoot, leaf), 'Not Verified');
-        claimed[msg.sender] = amount;
-        IERC20(info.token_address).transfer(msg.sender, amount * (10 ** ERC20(info.token_address).decimals()));
+        amount *= (10 ** 18);                                                               // 18 decimals
+        amount -= (((block.timestamp - info.start_time) / 86400) * 2) * amount / 10;        // -20% per day
+        IERC20(info.token_address).transfer(msg.sender, amount);
+        set_claimed(index);
         emit Claimed(amount, block.timestamp); 
+    }
+
+    function if_claimed(uint256 index) internal view returns (bool) {
+        return (claimed_bitmap[index/256] & (1 << (index%256))) == (1 << (index%256));
+    }
+
+    function set_claimed(uint256 index) internal {
+        claimed_bitmap[index/256] = (1 << (index%256)) | (claimed_bitmap[index/256]);
     }
 
     function withdraw() public creatorOnly {

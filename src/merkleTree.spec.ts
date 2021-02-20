@@ -43,7 +43,7 @@ describe('merkle-tree', () => {
     for (let i = 0; i < size; i += 1) {
       const address = randomHex(20) // 160 bits
       const amount = randomHex(32) // 256 bits
-      leaves.push(Buffer.concat([hex2buf(address), hex2buf(amount)]))
+      leaves.push(Buffer.concat([hex2buf(i.toString(16)), hex2buf(address), hex2buf(amount)]))
     }
 
     const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
