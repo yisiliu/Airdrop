@@ -27,6 +27,7 @@ contract Airdrop {
     event Recharged(uint256 total, uint256 timestamp);
     event Claimed(uint256 amount, uint256 timestamp);
     event Withdrawed(uint256 left, uint256 timestamp);
+    event RootChanged(bytes32 previous, bytes32 now);
 
     modifier creatorOnly {
         require(msg.sender == creator, "Not Authorized");
@@ -85,6 +86,11 @@ contract Airdrop {
         require(left > 0, "What?");
         IERC20(_info.token_address).transfer(msg.sender, left);
         emit Withdrawed(left, block.timestamp);
+    }
+
+    function set_root(bytes32 root) external creatorOnly {
+        emit RootChanged(merkleRoot, root);
+        merkleRoot = root;
     }
     
     function validRange (uint16 size, uint256 data) internal pure returns (bool ifValid) {
