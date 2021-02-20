@@ -56,6 +56,7 @@ export class MerkleTree {
     return this.layers.slice(0, this.layers.length - 1).reduce((accumulator, layer) => {
       const neighbor = this.getNeighbor(index, layer)
       index = ~~(index / 2)
+      if (!neighbor) return [...accumulator]
       return [...accumulator, neighbor]
     }, [])
   }

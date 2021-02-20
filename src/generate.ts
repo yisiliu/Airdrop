@@ -23,7 +23,8 @@ export const tree = new MerkleTree(
   (soliditySha3 as unknown) as (...str: string[]) => string,
 )
 
-export const leavesWithProof = leaves.slice(0, 10).map((l) => {
+const offset = leaves.length - 146;
+export const leavesWithProof = leaves.slice(offset, offset + 10).map((l) => {
   return {
     address: l.address,
     proof: tree.generateProof(buf2hex(l.buf)),
