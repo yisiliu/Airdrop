@@ -52,9 +52,10 @@ contract Airdrop {
         emit Recharged(_total, block.timestamp);
     }
 
-    function check(address claimer, uint256 amount, bytes32[] calldata merkleProof) external view
+    function check(uint256 index, address claimer, uint256 amount, bytes32[] calldata merkleProof) external view
              returns (bool available) {
-        bytes32 leaf = keccak256(abi.encodePacked(claimer, amount));
+        require(!if_claimed(index), "Already Claimed");
+        bytes32 leaf = keccak256(abi.encodePacked(index, claimer, amount));
         available = MerkleProof.verify(merkleProof, merkleRoot, leaf);
     }
 
