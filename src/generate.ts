@@ -11,7 +11,7 @@ const web3 = new Web3()
 const leaves = rawLeaves.map((v, i) => {
   return {
     buf: Buffer.concat([
-      hex2buf(i.toString(16)),
+      hex2buf(web3.eth.abi.encodeParameter('uint256', i)),
       hex2buf(v.address),
       hex2buf(web3.eth.abi.encodeParameter('uint256', v.amount)),
     ]),
