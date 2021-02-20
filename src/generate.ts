@@ -62,12 +62,7 @@ const template =
   `
 `
 
-const templateJson = endent`
-  {
-    "merkleRoot": "${tree.root}",
-    "leaves": ${JSON.stringify(leavesWithProof, null, 2)}
-  }
-`
+const templateJson = JSON.stringify({ merkleRoot: tree.root, leaves: leavesWithProof }, null, 2)
 
 fs.writeFile('test/constants.js', template, () => {})
 fs.writeFile('test/constants.json', templateJson, () => {})
