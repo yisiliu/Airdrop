@@ -2,6 +2,9 @@ import { randomHex, soliditySha3 } from 'web3-utils'
 import { MerkleTree } from './merkleTree'
 import { buf2hex, hex2buf } from './helpers'
 import fs from 'fs'
+import Web3 from 'web3'
+
+const web3 = new Web3()
 
 const rawLeaves = [...Array(3000)].map(() => ({
   address: randomHex(20),
@@ -9,7 +12,11 @@ const rawLeaves = [...Array(3000)].map(() => ({
 }))
 
 const leaves = rawLeaves.map(({ address, amount }, index) => ({
-  buf: Buffer.concat([hex2buf(index.toString(16)), hex2buf(address), hex2buf(amount)]),
+  buf: Buffer.concat([
+    hex2buf(index.toString(16)),
+    hex2buf(address),
+    hex2buf(web3.eth.abi.encodeParameter('uint256', amount)),
+  ]),
   address,
   amount,
 }))
