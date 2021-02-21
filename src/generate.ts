@@ -16,16 +16,16 @@ const ourAccounts = [
   '0x902Df9e56Def1641ce33A83d2FD2ACD41fd4Bc33',
   // '0xae77f70FB7Ecb4009eeE0FBcf94D659Eff2F7DC9',
 ]
-const helperAccounts = helperRawAccounts.map((v) => v.address)
-// insert random accounts
-ourAccounts.forEach((v) => {
-  const i = Math.floor((helperAccounts.length - 1) * Math.random())
-  console.log(i)
-  helperAccounts.splice(i, 0, v)
-})
+// const helperAccounts = helperRawAccounts.map((v) => v.address)
+// // insert random accounts
+// ourAccounts.forEach((v) => {
+//   const i = Math.floor((helperAccounts.length - 1) * Math.random())
+//   console.log(i)
+//   helperAccounts.splice(i, 0, v)
+// })
 
-const rawLeaves = helperAccounts.map((v) => ({ address: v, amount: Math.floor(Math.random() * 100000) }))
-const leaves = rawLeaves.map((v, i) => {
+// const rawLeaves = helperRawAccounts.map((v) => ({ address: v.address, amount: Math.floor(Math.random() * 100000) }))
+const leaves = helperRawAccounts.map((v, i) => {
   return {
     buf: Buffer.concat([
       hex2buf(web3.eth.abi.encodeParameter('uint256', i)),
