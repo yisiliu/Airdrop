@@ -5,15 +5,16 @@ import { helperRawAccounts } from './helperRawAccounts'
 import fs from 'fs'
 import endent from 'endent'
 import Web3 from 'web3'
+import Bignumber from 'bignumber.js'
 
 const web3 = new Web3()
 const ourAccounts = [
-  '0x0bd793ea8334a77b2bfd604dbaedca11ea094306',
+  // '0x0bd793ea8334a77b2bfd604dbaedca11ea094306',
   '0xb574F5F1396FDb17c03F441f673e5cCD15BE8251',
-  '0x66b57885E8E9D84742faBda0cE6E3496055b012d',
+  // '0x66b57885E8E9D84742faBda0cE6E3496055b012d',
   '0xa75e8c75F193ee0079F6C75CA7fcBE79C40C517f',
   '0x902Df9e56Def1641ce33A83d2FD2ACD41fd4Bc33',
-  '0xae77f70FB7Ecb4009eeE0FBcf94D659Eff2F7DC9',
+  // '0xae77f70FB7Ecb4009eeE0FBcf94D659Eff2F7DC9',
 ]
 const helperAccounts = helperRawAccounts.map((v) => v.address)
 // insert random accounts
@@ -41,11 +42,12 @@ export const tree = new MerkleTree(
 )
 
 const offset = 0
-export const leavesWithProof = leaves.map((l) => {
+export const leavesWithProof = leaves.map((l, i) => {
   return {
     address: l.address,
     proof: tree.generateProof(buf2hex(l.buf)),
-    amount: l.amount,
+    amount: new Bignumber(l.amount).toFixed(),
+    index: String(i),
   }
 })
 
