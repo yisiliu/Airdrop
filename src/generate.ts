@@ -2,6 +2,7 @@ import { randomHex, soliditySha3 } from 'web3-utils'
 import { MerkleTree } from './merkleTree'
 import { buf2hex, hex2buf } from './helpers'
 import { helperRawAccounts } from './helperRawAccounts'
+import { realData } from './realData'
 import fs from 'fs'
 import endent from 'endent'
 import Web3 from 'web3'
@@ -25,7 +26,7 @@ const ourAccounts = [
 // })
 
 // const rawLeaves = helperRawAccounts.map((v) => ({ address: v.address, amount: Math.floor(Math.random() * 100000) }))
-const leaves = helperRawAccounts.map((v, i) => {
+const leaves = realData.map((v, i) => {
   return {
     buf: Buffer.concat([
       hex2buf(web3.eth.abi.encodeParameter('uint256', i)),
