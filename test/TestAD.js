@@ -16,7 +16,6 @@ contract("AirDrop", () => {
         const leaf = leaves[i]
         const v = await airDrop.check.call(i+2854, leaf.address, leaf.amount, leaf.proof)
         expect(v[0]).to.be.true
-        console.log(v[1].toString(), v[2].toString(), v[3].toString())
       }
     })
   })
