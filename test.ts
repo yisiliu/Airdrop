@@ -21,7 +21,7 @@ server.listen(PORT, () => {
     await fs.writeFile('./test/constants.js', template)
     console.log('✨ test/constants.js generated')
 
-    exec('truffle test', (err: ExecException | null, stdout: string, _stderr: string) => {
+    spawn('truffle test', (err: ExecException | null, stdout: string, _stderr: string) => {
       console.log(stdout)
       server.close()
       err ? process.exit(1) : process.exit(0)
