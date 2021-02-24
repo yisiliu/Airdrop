@@ -1,13 +1,16 @@
 const chai = require('chai')
 const expect = chai.expect
 const AirDrop = artifacts.require("Airdrop")
+const Token = artifacts.require("TestTokenA")
 const { leaves } = require("./constants")
 
 let airDrop
+let token
 
 contract("AirDrop", () => {
   beforeEach(async () => {
     airDrop = await AirDrop.deployed()
+    token = await Token.deployed()    
   })
 
   describe('check()', async () => {
