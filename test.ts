@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import ganache from 'ganache-core'
 import { JsonRpcResponse, JsonRpcPayload } from 'ganache-core'
-import { spawn, ExecException } from 'child_process'
+import { exec, ExecException } from 'child_process'
 import { generate } from './src/generate'
 
 const PORT = 8545
@@ -21,7 +21,7 @@ server.listen(PORT, () => {
     await fs.writeFile('./test/constants.js', template)
     console.log('✨ test/constants.js generated')
 
-    spawn('truffle test', (err: ExecException | null, stdout: string, _stderr: string) => {
+    exec('truffle test', (err: ExecException | null, stdout: string, _stderr: string) => {
       console.log(stdout)
       server.close()
       err ? process.exit(1) : process.exit(0)
