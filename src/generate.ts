@@ -31,18 +31,7 @@ export function generate(accounts: string[]): string {
       amount: l.amount,
     }
   })
+  const merkleRoot = tree.root
 
-  return (
-    endent`
-    const merkleRoot = ${JSON.stringify(tree.root)}
-    const leaves = ${JSON.stringify(leavesWithProof, null, 2)}
-  
-    module.exports = {
-      merkleRoot,
-      leaves
-    }
-  ` +
-    `
-  `
-  )
+  return 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)
 }
