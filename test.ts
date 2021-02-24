@@ -13,7 +13,10 @@ server.listen(PORT, () => {
   console.log(`✨ ganache listening on port ${PORT}...`)
 
   provider.send({ method: 'eth_accounts' } as JsonRpcPayload, async (err: Error | null, response?: JsonRpcResponse) => {
-    if (!response) throw new Error('🚨 no accounts')
+    if (!response) {
+      server.close()
+      throw new Error('🚨 no accounts')
+    }
     const template = generate(response.result)
     await fs.writeFile('./test/constants.js', template)
     console.log('✨ test/constants.js generated')
