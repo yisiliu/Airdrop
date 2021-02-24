@@ -1,12 +1,12 @@
 import { promises as fs } from 'fs'
-import ganache from "ganache-core"
-import { JsonRpcResponse, JsonRpcPayload } from "ganache-core"
+import ganache from 'ganache-core'
+import { JsonRpcResponse, JsonRpcPayload } from 'ganache-core'
 import { exec, ExecException } from 'child_process'
 import { generate } from './src/generate'
 
-const PORT = 8545;
-const options = { accounts: Array(3000).fill({ balance: '0x' + (10 ** 20).toString(16) }) };
-const server = ganache.server(options);
+const PORT = 8545
+const options = { accounts: Array(3000).fill({ balance: '0x' + (10 ** 20).toString(16) }) }
+const server = ganache.server(options)
 const provider = server.provider
 
 server.listen(PORT, () => {
@@ -18,10 +18,10 @@ server.listen(PORT, () => {
     await fs.writeFile('./test/constants.js', template)
     console.log('✨ test/constants.js generated')
 
-    exec("truffle test", (err: ExecException | null, stdout: string, _stderr: string) => {
+    exec('truffle test', (err: ExecException | null, stdout: string, _stderr: string) => {
       console.log(stdout)
       server.close()
       err ? process.exit(1) : process.exit(0)
     })
   })
-});
+})

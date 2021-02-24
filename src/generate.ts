@@ -23,7 +23,7 @@ export function generate(accounts: string[]): string {
     (soliditySha3 as unknown) as (...str: string[]) => string,
   )
 
-  const offset = leaves.length - 146;
+  const offset = leaves.length - 146
   const leavesWithProof = leaves.slice(offset, offset + 10).map((l) => {
     return {
       address: l.address,
@@ -32,7 +32,8 @@ export function generate(accounts: string[]): string {
     }
   })
 
-  return endent`
+  return (
+    endent`
     const merkleRoot = "${tree.root}"
     const leaves = ${JSON.stringify(leavesWithProof, null, 2)}
   
@@ -43,4 +44,5 @@ export function generate(accounts: string[]): string {
   ` +
     `
   `
+  )
 }
