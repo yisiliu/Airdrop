@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import ganache from 'ganache-core'
 import { JsonRpcResponse, JsonRpcPayload } from 'ganache-core'
-import { exec, ExecException } from 'child_process'
+import { spawn, ExecException } from 'child_process'
 import { generate } from './src/generate'
 
 const PORT = 8545
