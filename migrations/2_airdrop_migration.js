@@ -1,11 +1,22 @@
-const Airdrop = artifacts.require("Airdrop");
-const { merkleRoot } = require("../test/constants")
-module.exports = function(deployer){
-    deployer.deploy(
-        Airdrop,
-        '0x0d9c8723b343a8368bebe0b5e89273ff8d712e3c',
-        merkleRoot,
-        1614222000,
-        1614654000
-    );
-};
+const Airdrop = artifacts.require("Airdrop")
+const BigNumber = require('bignumber.js')
+let TestTokenA = artifacts.require('TestTokenA')
+const { merkleRoot } = require("../test/generated")
+const { start_time, end_time, token_amount } = require("../test/constants")
+
+module.exports = function (deployer, _network, accounts) {
+    const amount = new BigNumber(token_amount).toFixed()
+    const creator = accounts[0]
+    deployer.deploy(TestTokenA, amount).then(async (token) => {
+        const airDrop = await deployer.deploy(
+            Airdrop,
+            token.address,
+            merkleRoot,
+            start_time,
+            end_time,
+            { from: creator }
+        )
+        await token.transfer.sendTransaction(airDrop.address, amount)
+        return airDrop
+    })
+}
