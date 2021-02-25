@@ -9,6 +9,7 @@ export function generate(accounts: string[]): string {
   const rawLeaves = accounts.map((address) => ({ address, amount: Math.floor(Math.random() * 100000) }))
   const leaves = rawLeaves.map((v, i) => {
     return {
+      index: String(i),
       buf: Buffer.concat([
         hex2buf(web3.eth.abi.encodeParameter('uint256', i)),
         hex2buf(v.address),
@@ -29,6 +30,7 @@ export function generate(accounts: string[]): string {
       address: l.address,
       proof: tree.generateProof(buf2hex(l.buf)),
       amount: l.amount,
+      index: l.index
     }
   })
   const merkleRoot = tree.root

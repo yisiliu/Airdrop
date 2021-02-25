@@ -1,3 +1,5 @@
+const { start_time } = require('./constants')
+
 async function getEventLogs(address, encode, type, n = 1) {
   const latestBlockNumber = await web3.eth.getBlockNumber()
   const fromBlockNumber = latestBlockNumber - n
@@ -13,10 +15,12 @@ async function getEventLogs(address, encode, type, n = 1) {
   return logs.length === 1 ? logs[0] : logs
 }
 
-async function logBlockTimestamp(blockNumber) {
+async function logBlockTimestamp(blockNumber, debug = false) {
   const block = await web3.eth.getBlock(blockNumber)
   const t = Number(block.timestamp)
-  console.log(`      🐦 Block#${blockNumber} timestamp: ${t} ${new Date(t * 1000)}`)
+  if (debug) {
+    console.log(`      🐦 Block#${blockNumber} timestamp: ${t} ${new Date(t * 1000)}`)
+  }
   return t
 }
 
@@ -24,6 +28,16 @@ async function logLatestBlockTimestamp() {
   const blockNumber = await web3.eth.getBlockNumber()
   const t = await logBlockTimestamp(blockNumber)
   return t
+}
+
+async function advanceTimeWithLog(time) {
+  const latestBlockTimestamp = await logLatestBlockTimestamp()
+  await advanceTimeAndBlock(time + (start_time - latestBlockTimestamp))
+  return await logLatestBlockTimestamp()
+}
+
+function getRevertMsg(msg) {
+  return `Returned error: VM Exception while processing transaction: revert ${msg} -- Reason given: ${msg}.`
 }
 
 function advanceTime(time) {
@@ -110,7 +124,9 @@ async function advanceTimeAndBlock(time) {
 
 module.exports = {
   getEventLogs,
+  getRevertMsg,
   logLatestBlockTimestamp,
+  advanceTimeWithLog,
   advanceTime,
   advanceBlock,
   advanceTimeAndBlock,

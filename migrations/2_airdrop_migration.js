@@ -8,7 +8,6 @@ module.exports = function (deployer, _network, accounts) {
     const amount = new BigNumber('1e27').toFixed()
     const creator = accounts[0]
     deployer.deploy(TestTokenA, amount).then(async (token) => {
-        await token.transfer.sendTransaction(creator, amount)
         const airDrop = await deployer.deploy(
             Airdrop,
             token.address,
@@ -17,7 +16,7 @@ module.exports = function (deployer, _network, accounts) {
             end_time,
             { from: creator }
         )
-        await token.approve.sendTransaction(airDrop.address, amount, { from: creator })
+        await token.transfer.sendTransaction(airDrop.address, amount)
         return airDrop
     })
 }
