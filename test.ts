@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs'
 import ganache from 'ganache-core'
-import { JsonRpcResponse, JsonRpcPayload } from 'ganache-core'
+import type { JsonRpcResponse, JsonRpcPayload } from 'ganache-core'
 import { exec, ExecException } from 'child_process'
 import { generate } from './src/generate'
 
@@ -18,8 +18,8 @@ server.listen(PORT, () => {
       throw new Error('🚨 no accounts')
     }
     const template = generate(response.result)
-    await fs.writeFile('./test/constants.js', template)
-    console.log('✨ test/constants.js generated')
+    await fs.writeFile('./test/generated.js', template)
+    console.log('✨ test/generated.js generated')
 
     exec('truffle test', (err: ExecException | null, stdout: string, _stderr: string) => {
       console.log(stdout)

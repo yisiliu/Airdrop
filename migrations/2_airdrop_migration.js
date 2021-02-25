@@ -1,7 +1,8 @@
 const Airdrop = artifacts.require("Airdrop")
 const BigNumber = require('bignumber.js')
 let TestTokenA = artifacts.require('TestTokenA')
-const { merkleRoot } = require("../test/constants")
+const { merkleRoot } = require("../test/generated")
+const { start_time, end_time } = require("../test/constants")
 
 module.exports = function (deployer, _network, accounts) {
     const amount = new BigNumber('1e27').toFixed()
@@ -12,8 +13,8 @@ module.exports = function (deployer, _network, accounts) {
             Airdrop,
             token.address,
             merkleRoot,
-            1614222000,
-            1614654000,
+            start_time,
+            end_time,
             { from: creator }
         )
         await token.approve.sendTransaction(airDrop.address, amount, { from: creator })
