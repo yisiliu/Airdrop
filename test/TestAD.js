@@ -12,6 +12,9 @@ const {
   root_changed_types,
   claimed_encode,
   claimed_types,
+  withdrawed_encode,
+  withdrawed_types,
+  token_amount
 } = require("./constants")
 const {
   getEventLogs,
@@ -28,7 +31,7 @@ let token
 let snapShot
 let snapshotId
 
-contract("AirDrop", () => {
+contract("AirDrop", (accounts) => {
   beforeEach(async () => {
     airDrop = await AirDrop.deployed()
     token = await Token.deployed()
@@ -179,19 +182,6 @@ contract("AirDrop", () => {
       await claimFail('Expired')
     })
 
-    async function claim(shrinkRate = 1) {
-      for (let i = 0; i < leavesWithProof.length; i++) {
-        const leaf = leavesWithProof[i]
-        await airDrop.claim.sendTransaction(leaf.index, leaf.amount, leaf.proof, { from: leaf.address })
-      }
-      const logs = await getEventLogs(airDrop.address, claimed_encode, claimed_types, leavesWithProof.length)
-      logs.forEach((log, i) => {
-        expect(BigNumber(log.amount).div(1e18).toFixed(2)).to.be.eq(
-          (leavesWithProof[i].amount * shrinkRate).toFixed(2)
-        )
-      })
-    }
-
     async function claimFail(reason) {
       for (let i = 0; i < leavesWithProof.length; i++) {
         const leaf = leavesWithProof[i]
@@ -206,4 +196,52 @@ contract("AirDrop", () => {
       }
     }
   })
+
+  describe('withdraw()', async () => {
+    it('should fail when not called by contract creator', async () => {
+      await expect(
+        airDrop.withdraw.sendTransaction({ from: accounts[2] })
+      ).to.be.rejectedWith(getRevertMsg('Not Authorized'))
+    })
+
+    it('should fail when not Not Expired', async () => {
+      await expect(
+        airDrop.withdraw.sendTransaction({ from: accounts[0] })
+      ).to.be.rejectedWith(getRevertMsg('Not Expired'))
+    })
+
+    it('should withdraw successful after Expired', async () => {
+      await advanceTimeWithLog(86400 * 5 / 10)
+      const claimed_amount = BigNumber(await claim()).times(10 ** 18)
+      await advanceTimeWithLog(86400 * 100)
+      await airDrop.withdraw.sendTransaction({ from: accounts[0] })
+      const log = await getEventLogs(airDrop.address, withdrawed_encode, withdrawed_types)
+      expect(log).to.have.property('left').that.to.be.eq(
+        BigNumber(token_amount).minus(claimed_amount).toFixed()
+      )
+      console.log(`     🐦 withdrawed amount: ${log.left}`)
+      console.log(`     🐦 claimed amount: ${claimed_amount.toFixed()}`)
+    })
+  })
+
+  async function claim(shrinkRate = 1) {
+    let claimed_amount = 0
+    for (let i = 0; i < leavesWithProof.length; i++) {
+      const leaf = leavesWithProof[i]
+      await airDrop.claim.sendTransaction(leaf.index, leaf.amount, leaf.proof, { from: leaf.address })
+      const balance = await token.balanceOf.call(leaf.address)
+      claimed_amount += leaf.amount * shrinkRate
+      expect(BigNumber(balance.toString()).div(1e18).toFixed(2)).to.be.eq(
+        (leaf.amount * shrinkRate).toFixed(2)
+      )
+    }
+    const logs = await getEventLogs(airDrop.address, claimed_encode, claimed_types, leavesWithProof.length)
+    logs.forEach(async (log, i) => {
+      const leaf = leavesWithProof[i]
+      expect(BigNumber(log.amount).div(1e18).toFixed(2)).to.be.eq(
+        (leaf.amount * shrinkRate).toFixed(2)
+      )
+    })
+    return claimed_amount
+  }
 })
