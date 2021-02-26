@@ -8,7 +8,12 @@ export function generate(accounts: string[], test_accounts: string[]) {
   const web3 = new Web3()
   const rawLeaves = accounts.map((address) => ({ address, amount: Math.floor(Math.random() * 100000) }))
   test_accounts.push('0x0000000000000000000000000000000000000000')
-  const rawTestLeaves = test_accounts.map((address) => ({ address, amount: Math.floor(Math.random() * 100000) }))
+  const rawTestLeaves = test_accounts.map((address) => (
+    {
+      address,
+      amount: address === '0x0000000000000000000000000000000000000000' ? 0 : Math.floor(Math.random() * 100000)
+    }
+  ))
 
   const leaves = rawLeaves.map((v, i) => {
     return {

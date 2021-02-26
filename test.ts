@@ -12,6 +12,8 @@ const test_accounts = [
   '0xa75e8c75F193ee0079F6C75CA7fcBE79C40C517f',
   '0x902Df9e56Def1641ce33A83d2FD2ACD41fd4Bc33',
   '0xae77f70FB7Ecb4009eeE0FBcf94D659Eff2F7DC9',
+  '0x0d09dC9a840B1b4ea25194998fD90bB50fC2008A',
+  '0xFD7A5D91AF554ACD8ED07c7911E8556a7D20D88a'
 ]
 const options = { accounts: Array(3000).fill({ balance: '0x' + (10 ** 20).toString(16) }) }
 const server = ganache.server(options)
