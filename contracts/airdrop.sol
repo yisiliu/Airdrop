@@ -62,10 +62,10 @@ contract Airdrop {
         if (!available) {
             claimable = 0;
         } else if (block.timestamp > info.start_time) {
-            if ((block.timestamp - info.start_time) / 86400 > 5) {
+            if ((block.timestamp - info.start_time) / 600 > 5 || block.timestamp > info.end_time) {
                 claimable = 0;
             } else {
-                claimable = amount - amount * (((block.timestamp - info.start_time) / 86400) * 2) / 10;
+                claimable = amount - amount * (((block.timestamp - info.start_time) / 600) * 2) / 10;
             }
         } else {
             claimable = amount;
@@ -75,11 +75,11 @@ contract Airdrop {
     function claim(uint256 index, uint256 amount, bytes32[] calldata merkleProof) external {
         require(!if_claimed(index), "Already Claimed");
         require(block.timestamp > info.start_time, "Not Started");
-        require(block.timestamp < info.end_time && (block.timestamp - info.start_time) / 86400 < 5, "Expired");
+        require(block.timestamp < info.end_time && (block.timestamp - info.start_time) / 600 < 5, "Expired");
         bytes32 leaf = keccak256(abi.encodePacked(index, msg.sender, amount));
         require(MerkleProof.verify(merkleProof, merkleRoot, leaf), 'Not Verified');
         amount *= (10 ** 18);                                                               // 18 decimals
-        amount -= (((block.timestamp - info.start_time) / 86400) * 2) * amount / 10;        // -20% per day
+        amount -= (((block.timestamp - info.start_time) / 600) * 2) * amount / 10;        // -20% per day
         IERC20(info.token_address).transfer(msg.sender, amount);
         set_claimed(index);
         emit Claimed(amount, block.timestamp); 

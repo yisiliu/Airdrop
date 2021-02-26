@@ -60,50 +60,50 @@ contract("AirDrop", (accounts) => {
     })
 
     it('should not decrease the amount less than one day', async () => {
-      const currentBlockTimestamp = await advanceTimeWithLog(86400 * 9 / 10)
-      expect(currentBlockTimestamp - start_time).to.be.lessThan(86400)
+      const currentBlockTimestamp = await advanceTimeWithLog(600 * 9 / 10)
+      expect(currentBlockTimestamp - start_time).to.be.lessThan(600)
       await check(true, 1)
     })
 
     it('should decrease the amount by 20% when one day after start_time', async () => {
-      const currentBlockTimestamp = await advanceTimeWithLog(86400 * 10 / 10)
-      expect(currentBlockTimestamp - start_time).to.be.lessThan(86400 * 2)
+      const currentBlockTimestamp = await advanceTimeWithLog(600 * 10 / 10)
+      expect(currentBlockTimestamp - start_time).to.be.lessThan(600 * 2)
       await check(true, 0.8)
     })
 
     it('should decrease the amount by 20% after one day after start_time', async () => {
-      const currentBlockTimestamp = await advanceTimeWithLog(86400 * 11 / 10)
-      expect(currentBlockTimestamp - start_time).to.be.lessThan(86400 * 2).and.to.be.greaterThan(86400)
+      const currentBlockTimestamp = await advanceTimeWithLog(600 * 11 / 10)
+      expect(currentBlockTimestamp - start_time).to.be.lessThan(600 * 2).and.to.be.greaterThan(600)
       await check(true, 0.8)
     })
 
     it('should decrease the amount by 40% after two days after start_time', async () => {
-      const currentBlockTimestamp = await advanceTimeWithLog(86400 * 21 / 10)
-      expect(currentBlockTimestamp - start_time).to.be.lessThan(86400 * 3).and.to.be.greaterThan(86400 * 2)
+      const currentBlockTimestamp = await advanceTimeWithLog(600 * 21 / 10)
+      expect(currentBlockTimestamp - start_time).to.be.lessThan(600 * 3).and.to.be.greaterThan(600 * 2)
       await check(true, 0.6)
     })
 
     it('should decrease the amount by 60% after three days after start_time', async () => {
-      const currentBlockTimestamp = await advanceTimeWithLog(86400 * 31 / 10)
-      expect(currentBlockTimestamp - start_time).to.be.lessThan(86400 * 4).and.to.be.greaterThan(86400 * 3)
+      const currentBlockTimestamp = await advanceTimeWithLog(600 * 31 / 10)
+      expect(currentBlockTimestamp - start_time).to.be.lessThan(600 * 4).and.to.be.greaterThan(600 * 3)
       await check(true, 0.4)
     })
 
     it('should decrease the amount by 80% after four days after start_time', async () => {
-      const currentBlockTimestamp = await advanceTimeWithLog(86400 * 41 / 10)
-      expect(currentBlockTimestamp - start_time).to.be.lessThan(86400 * 5).and.to.be.greaterThan(86400 * 4)
+      const currentBlockTimestamp = await advanceTimeWithLog(600 * 41 / 10)
+      expect(currentBlockTimestamp - start_time).to.be.lessThan(600 * 5).and.to.be.greaterThan(600 * 4)
       await check(true, 0.2)
     })
 
     it('should decrease the amount by 100% after five days after start_time', async () => {
-      const currentBlockTimestamp = await advanceTimeWithLog(86400 * 51 / 10)
-      expect(currentBlockTimestamp - start_time).to.be.lessThan(86400 * 6).and.to.be.greaterThan(86400 * 5)
+      const currentBlockTimestamp = await advanceTimeWithLog(600 * 51 / 10)
+      expect(currentBlockTimestamp - start_time).to.be.lessThan(600 * 6).and.to.be.greaterThan(600 * 5)
       await check(true, 0)
     })
 
     it('should decrease the amount by 100% after six days after start_time', async () => {
-      const currentBlockTimestamp = await advanceTimeWithLog(86400 * 61 / 10)
-      expect(currentBlockTimestamp - start_time).to.be.lessThan(86400 * 7).and.to.be.greaterThan(86400 * 6)
+      const currentBlockTimestamp = await advanceTimeWithLog(600 * 61 / 10)
+      expect(currentBlockTimestamp - start_time).to.be.lessThan(600 * 7).and.to.be.greaterThan(600 * 6)
       await check(true, 0)
     })
 
@@ -129,17 +129,17 @@ contract("AirDrop", (accounts) => {
     })
 
     it('should failure to claim when Expired', async () => {
-      await advanceTimeWithLog(86400 * 100 / 10)
+      await advanceTimeWithLog(600 * 100 / 10)
       await claimFail('Expired')
     })
 
     it('should failure to claim when Not Verified', async () => {
-      await advanceTimeWithLog(86400 * 5 / 10)
+      await advanceTimeWithLog(600 * 5 / 10)
       await claimFail('Not Verified')
     })
 
     it('should failure to claim when Already Claimed', async () => {
-      await advanceTimeWithLog(86400 * 5 / 10)
+      await advanceTimeWithLog(600 * 5 / 10)
       const leaf = leavesWithProof[0]
       await airDrop.claim.sendTransaction(leaf.index, leaf.amount, leaf.proof, { from: leaf.address })
       await expect(
@@ -148,37 +148,37 @@ contract("AirDrop", (accounts) => {
     })
 
     it('should claim 100% amount within one day', async () => {
-      await advanceTimeWithLog(86400 * 5 / 10)
+      await advanceTimeWithLog(600 * 5 / 10)
       await claim()
     })
 
     it('should claim 80% amount after one day', async () => {
-      await advanceTimeWithLog(86400 * 11 / 10)
+      await advanceTimeWithLog(600 * 11 / 10)
       await claim(0.8)
     })
 
     it('should claim 60% amount after two days', async () => {
-      await advanceTimeWithLog(86400 * 21 / 10)
+      await advanceTimeWithLog(600 * 21 / 10)
       await claim(0.6)
     })
 
     it('should claim 40% amount after three days', async () => {
-      await advanceTimeWithLog(86400 * 31 / 10)
+      await advanceTimeWithLog(600 * 31 / 10)
       await claim(0.4)
     })
 
     it('should claim 20% amount after four days', async () => {
-      await advanceTimeWithLog(86400 * 41 / 10)
+      await advanceTimeWithLog(600 * 41 / 10)
       await claim(0.2)
     })
 
     it('should failure to claim when expired after five days', async () => {
-      await advanceTimeWithLog(86400 * 51 / 10)
+      await advanceTimeWithLog(600 * 51 / 10)
       await claimFail('Expired')
     })
 
     it('should failure to claim when expired after six days', async () => {
-      await advanceTimeWithLog(86400 * 61 / 10)
+      await advanceTimeWithLog(600 * 61 / 10)
       await claimFail('Expired')
     })
 
@@ -211,7 +211,7 @@ contract("AirDrop", (accounts) => {
     })
 
     it('should withdraw successful after Expired', async () => {
-      await advanceTimeWithLog(86400 * 5 / 10)
+      await advanceTimeWithLog(600 * 5 / 10)
       const claimed_amount = BigNumber(await claim()).times(10 ** 18)
       await advanceTimeWithLog(86400 * 100)
       await airDrop.withdraw.sendTransaction({ from: accounts[0] })
