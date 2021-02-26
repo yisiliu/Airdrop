@@ -37,3 +37,36 @@ export function generate(accounts: string[]): string {
 
   return 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)
 }
+
+
+export function generateReal(accounts: { address: string; amount: number }[]): string {
+  const web3 = new Web3()
+  const leaves = accounts.map((v, i) => {
+    return {
+      index: String(i),
+      buf: Buffer.concat([
+        hex2buf(web3.eth.abi.encodeParameter('uint256', i)),
+        hex2buf(v.address),
+        hex2buf(web3.eth.abi.encodeParameter('uint256', Number(v.amount.toFixed(0)))),
+      ]),
+      ...v,
+    }
+  })
+
+  const tree = new MerkleTree(
+    leaves.map((l) => buf2hex(l.buf)),
+    (soliditySha3 as unknown) as (...str: string[]) => string,
+  )
+
+  const leavesWithProof = leaves.map((l) => {
+    return {
+      address: l.address,
+      proof: tree.generateProof(buf2hex(l.buf)),
+      amount: Number(l.amount.toFixed(0)),
+      index: l.index
+    }
+  })
+  const merkleRoot = tree.root
+
+  return 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)
+}
