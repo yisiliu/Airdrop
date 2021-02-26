@@ -1,7 +1,7 @@
 const Airdrop = artifacts.require("Airdrop")
 const BigNumber = require('bignumber.js')
 let TestTokenA = artifacts.require('TestTokenA')
-const { merkleRoot } = require("../test/generated")
+const { merkleRoot } = require("../test/generatedReal")
 const { start_time, end_time, token_amount } = require("../test/constants")
 
 module.exports = function (deployer, _network, accounts) {

@@ -2,7 +2,8 @@ import { promises as fs } from 'fs'
 import ganache from 'ganache-core'
 import type { JsonRpcResponse, JsonRpcPayload } from 'ganache-core'
 import { exec, ExecException } from 'child_process'
-import { generate } from './src/generate'
+import { generate, generateReal } from './src/generate'
+import { accounts } from './src/rawData'
 
 const PORT = 8545
 const options = { accounts: Array(3000).fill({ balance: '0x' + (10 ** 20).toString(16) }) }
@@ -18,8 +19,11 @@ server.listen(PORT, () => {
       throw new Error('🚨 no accounts')
     }
     const template = generate(response.result)
+    const templateReal = generateReal(accounts)
     await fs.writeFile('./test/generated.js', template)
     console.log('✨ test/generated.js generated')
+    await fs.writeFile('./test/generatedReal.js', templateReal)
+    console.log('✨ test/generatedReal.js generated')
 
     exec('truffle test', (err: ExecException | null, stdout: string, _stderr: string) => {
       console.log(stdout)
