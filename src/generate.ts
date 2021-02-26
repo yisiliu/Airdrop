@@ -69,10 +69,10 @@ export function generate(accounts: string[], test_accounts: string[]) {
   const leavesWithProof = fullLeavesWithProof.slice(offset, offset + 10)
 
   const merkleRoot = tree.root
-  const testMerkleRoot = tree.root
+  const testMerkleRoot = testTree.root
 
   return {
-    json: JSON.stringify({ merkleRoot: testMerkleRoot, leavesWithProof: testFullLeavesWithProof }, null, 2),
+    json: JSON.stringify({ merkleRoot: testMerkleRoot, leaves: testFullLeavesWithProof }, null, 2),
     template: 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)
   }
 }

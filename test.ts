@@ -32,7 +32,7 @@ server.listen(PORT, () => {
       r.splice(Math.floor(3000 * Math.random()), 0, account)
     })
     const { template, json } = generate(response.result, r)
-    await fs.writeFile('./test/proof.json', json)
+    await fs.writeFile('./test/proofs.json', json)
     await fs.writeFile('./test/generated.js', template)
     console.log('✨ test/generated.js generated')
 
