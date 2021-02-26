@@ -40,6 +40,10 @@ function getRevertMsg(msg) {
   return `Returned error: VM Exception while processing transaction: revert ${msg} -- Reason given: ${msg}.`
 }
 
+function getRevertMsg2(msg) {
+  return `Returned error: VM Exception while processing transaction: revert ${msg}`
+}
+
 function advanceTime(time) {
   return new Promise((resolve, reject) => {
     web3.currentProvider.send(
@@ -125,6 +129,7 @@ async function advanceTimeAndBlock(time) {
 module.exports = {
   getEventLogs,
   getRevertMsg,
+  getRevertMsg2,
   logLatestBlockTimestamp,
   advanceTimeWithLog,
   advanceTime,
