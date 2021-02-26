@@ -62,7 +62,7 @@ contract Airdrop {
         if (!available) {
             claimable = 0;
         } else if (block.timestamp > info.start_time) {
-            if ((block.timestamp - info.start_time) / 600 > 5) {
+            if ((block.timestamp - info.start_time) / 600 > 5 || block.timestamp > info.end_time) {
                 claimable = 0;
             } else {
                 claimable = amount - amount * (((block.timestamp - info.start_time) / 600) * 2) / 10;
