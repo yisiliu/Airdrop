@@ -923,7 +923,7 @@ contract Airdrop {
             claimable = 0;
         } else if (block.timestamp > info.start_time) {
             claimable = amount * (10 ** 18);
-            claimable -= (((block.timestamp - info.start_time) / 86400) * 2) * claimable / 10 / (10**18);
+            claimable -= (((block.timestamp - info.start_time) / 600) * 2) * claimable / 10 / (10**18);
         } else {
             claimable = amount;
         }
@@ -936,7 +936,7 @@ contract Airdrop {
         bytes32 leaf = keccak256(abi.encodePacked(index, msg.sender, amount));
         require(MerkleProof.verify(merkleProof, merkleRoot, leaf), 'Not Verified');
         amount *= (10 ** 18);                                                               // 18 decimals
-        amount -= (((block.timestamp - info.start_time) / 86400) * 2) * amount / 10;        // -20% per day
+        amount -= (((block.timestamp - info.start_time) / 600) * 2) * amount / 10;        // -20% per day
         IERC20(info.token_address).transfer(msg.sender, amount);
         set_claimed(index);
         emit Claimed(amount, block.timestamp); 
