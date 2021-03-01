@@ -1,9 +1,10 @@
+const now = Math.floor(new Date().getTime() / 1000)
 module.exports = {
   token_amount: 1e27,
-  // Fri Feb 28 2021 11:00:00 GMT+0800 (China Standard Time)
-  start_time: 1614481200,
-  // Fri Mar 07 2021 11:00:00 GMT+0800 (China Standard Time)
-  end_time: 1615086000,
+  // one day after now
+  start_time: now + 86400,
+  // five days after start time
+  end_time: now + 86400 * 6,
   root_changed_encode: 'RootChanged(bytes32,bytes32)',
   root_changed_types: [
     { type: 'bytes32', name: 'previous' },

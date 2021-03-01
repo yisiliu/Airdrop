@@ -6,7 +6,8 @@
   "main": "truffle-config.js",
   "scripts": {
     "pretest": "mocha",
-    "test": "ts-node test.ts"
+    "test": "ts-node test.ts",
+    "test:real": "npm run pretest && REAL=true ts-node test.ts"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^3.3.0",
@@ -20,7 +21,6 @@
     "bignumber.js": "^9.0.1",
     "chai": "^4.3.0",
     "chai-as-promised": "^7.1.1",
-    "endent": "^2.0.1",
     "ganache-core": "^2.13.2",
     "mocha": "^8.3.0",
     "truffle": "^5.1.67",
