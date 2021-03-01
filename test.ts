@@ -22,8 +22,11 @@ server.listen(PORT, () => {
     const templateReal = generateReal(accounts)
     await fs.writeFile('./test/generated.js', template)
     console.log('✨ test/generated.js generated')
-    await fs.writeFile('./test/generatedReal.js', templateReal)
-    console.log('✨ test/generatedReal.js generated')
+
+    if (process.env.REAL === 'true') {
+      await fs.writeFile('./test/generatedReal.js', templateReal)
+      console.log('✨ test/generatedReal.js generated')
+    }
 
     exec('truffle test', (err: ExecException | null, stdout: string, _stderr: string) => {
       console.log(stdout)

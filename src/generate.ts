@@ -1,8 +1,7 @@
 import fs from 'fs'
-import { randomHex, soliditySha3 } from 'web3-utils'
+import { soliditySha3 } from 'web3-utils'
 import { MerkleTree } from './merkleTree'
 import { buf2hex, hex2buf } from './helpers'
-import endent from 'endent'
 import Web3 from 'web3'
 
 export function generate(accounts: string[]): string {
@@ -52,7 +51,7 @@ export function generateReal(accounts: { address: string; amount: number }[]): s
       ]),
       ...v,
     }
-  })
+  }).slice(0, 100)
 
   const tree = new MerkleTree(
     leaves.map((l) => buf2hex(l.buf)),
@@ -70,7 +69,9 @@ export function generateReal(accounts: { address: string; amount: number }[]): s
 
   const merkleRoot = tree.root
 
-  fs.writeFile('data/proofs.json', JSON.stringify({ merkleRoot, leaves: leavesWithProof }, null, 2), () => { })
+  if (process.env.REAL === 'true') {
+    fs.writeFile('data/proofs.json', JSON.stringify({ merkleRoot, leaves: leavesWithProof }, null, 2), () => { })
+  }
 
   return 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)
 }
