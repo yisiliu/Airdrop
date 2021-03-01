@@ -1,4 +1,4 @@
-export const accounts = [
+export const rawData = [
   {
     "address": "0x0000000000000D9054F605cA65A2647c2B521422",
     "amount": 50

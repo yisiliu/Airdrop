@@ -22,8 +22,6 @@ const {
   getEventLogs,
   takeSnapshot,
   revertToSnapShot,
-  advanceTimeAndBlock,
-  logLatestBlockTimestamp,
   advanceTimeWithLog,
   getRevertMsg
 } = require("./utils")

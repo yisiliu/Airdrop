@@ -3,10 +3,25 @@ import ganache from 'ganache-core'
 import type { JsonRpcResponse, JsonRpcPayload } from 'ganache-core'
 import { exec, ExecException } from 'child_process'
 import { generate, generateReal } from './src/generate'
-import { accounts } from './src/rawData'
+import { rawData } from './src/rawData'
+import Web3 from 'web3'
 
+const web3 = new Web3()
 const PORT = 8545
-const options = { accounts: Array(3000).fill({ balance: '0x' + (10 ** 20).toString(16) }) }
+const accounts = [...new Array(3000)].map(() => {
+  const secretKey = web3.eth.accounts.create().privateKey
+  return {
+    balance: '0x' + (10 ** 20).toString(16),
+    secretKey
+  }
+})
+
+// Inject real account by passing secretKey
+// accounts.push({ secretKey: '...', balance: '0x' + (10 ** 20).toString(16) })
+
+const options = {
+  accounts
+}
 const server = ganache.server(options)
 const provider = server.provider
 
@@ -19,11 +34,12 @@ server.listen(PORT, () => {
       throw new Error('🚨 no accounts')
     }
     const template = generate(response.result)
-    const templateReal = generateReal(accounts)
+
     await fs.writeFile('./test/generated.js', template)
     console.log('✨ test/generated.js generated')
 
     if (process.env.REAL === 'true') {
+      const templateReal = generateReal(rawData)
       await fs.writeFile('./test/generatedReal.js', templateReal)
       console.log('✨ test/generatedReal.js generated')
     }
