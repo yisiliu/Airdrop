@@ -12,7 +12,7 @@ async function getEventLogs(address, encode, type, n = 1) {
     fromBlock: fromBlockNumber,
     toBlock: latestBlockNumber,
   })
-  const logs = ralLogs.map(log => abiCoder.decode(type, log.data))
+  const logs = ralLogs.map((log) => abiCoder.decode(type, log.data))
   return logs.length === 1 ? logs[0] : logs
 }
 

@@ -24,7 +24,7 @@ function generate(accounts) {
 
   const tree = new MerkleTree(
     leaves.map((l) => buf2hex(l.buf)),
-    soliditySha3
+    soliditySha3,
   )
 
   const offset = leaves.length - 146
@@ -33,7 +33,7 @@ function generate(accounts) {
       address: l.address,
       proof: tree.generateProof(buf2hex(l.buf)),
       amount: l.amount,
-      index: l.index
+      index: l.index,
     }
   })
   const merkleRoot = tree.root
@@ -46,21 +46,23 @@ function generate(accounts) {
  * @returns {string}
  */
 function generateReal(accounts) {
-  const leaves = accounts.map((v, i) => {
-    return {
-      index: String(i),
-      buf: Buffer.concat([
-        hex2buf(abiCoder.encode(['uint256'], [i])),
-        hex2buf(v.address),
-        hex2buf(abiCoder.encode(['uint256'], [Number(v.amount.toFixed(0))])),
-      ]),
-      ...v
-    }
-  }).slice(0, 100)
+  const leaves = accounts
+    .map((v, i) => {
+      return {
+        index: String(i),
+        buf: Buffer.concat([
+          hex2buf(abiCoder.encode(['uint256'], [i])),
+          hex2buf(v.address),
+          hex2buf(abiCoder.encode(['uint256'], [Number(v.amount.toFixed(0))])),
+        ]),
+        ...v,
+      }
+    })
+    .slice(0, 100)
 
   const tree = new MerkleTree(
     leaves.map((l) => buf2hex(l.buf)),
-    soliditySha3
+    soliditySha3,
   )
 
   const leavesWithProof = leaves.map((l) => {
@@ -68,14 +70,14 @@ function generateReal(accounts) {
       address: l.address,
       proof: tree.generateProof(buf2hex(l.buf)),
       amount: Number(l.amount.toFixed(0)),
-      index: l.index
+      index: l.index,
     }
   })
 
   const merkleRoot = tree.root
 
   if (process.env.REAL === 'true') {
-    fs.writeFile('data/proofs.json', JSON.stringify({ merkleRoot, leaves: leavesWithProof }, null, 2), () => { })
+    fs.writeFile('data/proofs.json', JSON.stringify({ merkleRoot, leaves: leavesWithProof }, null, 2), () => {})
   }
 
   return 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)
@@ -83,5 +85,5 @@ function generateReal(accounts) {
 
 module.exports = {
   generate,
-  generateReal
+  generateReal,
 }

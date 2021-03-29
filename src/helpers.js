@@ -6,5 +6,5 @@ module.exports = {
   /**
    * @param {string} h
    */
-  hex2buf: (h) => Buffer.from(h.replace(/^0x/i, ''), 'hex')
+  hex2buf: (h) => Buffer.from(h.replace(/^0x/i, ''), 'hex'),
 }

@@ -19,5 +19,5 @@ module.exports = {
   withdrawed_types: [
     { type: 'uint256', name: 'left' },
     { type: 'uint256', name: 'timestamp' },
-  ]
+  ],
 }
