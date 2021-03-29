@@ -56,7 +56,7 @@ function generateReal(accounts) {
         hex2buf(v.address),
         hex2buf(web3.eth.abi.encodeParameter('uint256', Number(v.amount.toFixed(0)))),
       ]),
-      ...v,
+      ...v
     }
   }).slice(0, 100)
 
