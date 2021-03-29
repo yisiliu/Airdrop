@@ -1,4 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/mocharc",
-  "spec": ["src/**/*.spec.js"]
+  "require": "ts-node/register",
+  "spec": ["src/**/*.spec.ts"],
+  "extension": ["ts"]
 }

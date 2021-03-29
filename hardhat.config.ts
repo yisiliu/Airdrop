@@ -1,9 +1,10 @@
-require("@nomiclabs/hardhat-waffle")
-
-const fs = require('fs').promises
-const ethers = require('ethers')
-const { generate, generateReal } = require('./src/generate')
-const { rawData } = require('./src/rawData')
+import "@nomiclabs/hardhat-waffle"
+import "@nomiclabs/hardhat-ethers"
+import { task } from "hardhat/config"
+import { promises as fs } from 'fs'
+import { ethers } from 'ethers'
+import { generate, generateReal } from './src/generate'
+import { rawData } from './src/rawData'
 
 task("test:prepare_data", "Generate data that required by test", async (taskArguments, hre) => {
   /* As hardhat allows to access its runtime environment variables, 
@@ -25,10 +26,10 @@ task("test:prepare_data", "Generate data that required by test", async (taskArgu
 task("test:finally", "Test after data prepared")
   /* pass param from cli: `hardhat test:finally --real true` */
   .addOptionalParam("real", "whether using real data", "false")
-  .setAction(async () => {
-    await run("test:prepare_data")
+  .setAction(async (taskArguments, hre) => {
+    await hre.run("test:prepare_data")
     /* but pass param to a built-in task is not convenient, recommend using node's process.env */
-    await run("test")
+    await hre.run("test")
   })
 
 /**

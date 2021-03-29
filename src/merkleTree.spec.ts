@@ -1,20 +1,19 @@
-const { assert } = require('chai')
-require('mocha')
-const { randomHex, soliditySha3 } = require('web3-utils')
-const { buf2hex, hex2buf } = require('./helpers')
-const { MerkleTree } = require('./merkleTree')
+import { assert } from 'chai'
+import 'mocha'
+import { randomHex, soliditySha3 } from 'web3-utils'
+import { buf2hex, hex2buf } from './helpers'
+import { MerkleTree } from './merkleTree'
 
 describe('merkle-tree', () => {
   it('basic', () => {
     const size = 3000
-    /** @type {Buffer[]} */
-    const leaves = []
+    const leaves: Buffer[] = []
 
     for (let i = 0; i < size; i++) {
       leaves.push(Buffer.alloc(1, i))
     }
 
-    const tree = new MerkleTree(leaves.map(buf2hex), soliditySha3)
+    const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
     const proof = tree.generateProof(buf2hex(leaves[614]))
 
     assert.equal(tree.root, '0x5f81c0a697e1f593aea92e02ee1cd557760d17dc86168697667e17bbdfa7993a')
@@ -38,8 +37,7 @@ describe('merkle-tree', () => {
 
   it('address', () => {
     const size = 15949
-    /** @type {Buffer[]} */
-    const leaves = []
+    const leaves: Buffer[] = []
     const x = 12312
 
     for (let i = 0; i < size; i += 1) {
@@ -48,7 +46,7 @@ describe('merkle-tree', () => {
       leaves.push(Buffer.concat([hex2buf(i.toString(16)), hex2buf(address), hex2buf(amount)]))
     }
 
-    const tree = new MerkleTree(leaves.map(buf2hex), soliditySha3)
+    const tree = new MerkleTree(leaves.map(buf2hex), (soliditySha3 as unknown) as (...str: string[]) => string)
     const proof = tree.generateProof(buf2hex(leaves[x]))
 
     assert.doesNotThrow(() => tree.root)

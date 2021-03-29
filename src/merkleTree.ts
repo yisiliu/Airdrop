@@ -1,43 +1,25 @@
-class MerkleTree {
-  /** @type @private {string[][]}  */
-  layers = []
+export class MerkleTree {
+  private layers: string[][] = []
 
-  /**
-   * @param {string[]} leaves @private
-   * @param {(...str: string[]) => string} algorithm @private
-   */
-  constructor(leaves, algorithm) {
-    this.leaves = leaves
-    this.algorithm = algorithm
+  constructor(private leaves: string[], private algorithm: (...str: string[]) => string) {
     this.build(this.leaves)
   }
 
-  /**
-   * @private
-   * @param {string} x
-   */
-  hash(x) {
-    return this.algorithm(x)
+  private hash(x: string) {
+    return this.algorithm(x)!
   }
 
-  /**
-   * @private
-   * @param {string} [x]
-   * @param {string} [y]
-   * @returns {string}
-   */
-  combine_hash(x, y) {
+  private combine_hash(x?: string, y?: string): string {
     if (x && !y) return x.toString()
     else if (!x && y) return y.toString()
-    else if (x && y) return x < y ? this.algorithm(x, y) : this.algorithm(y, x)
+    else if (x && y) return x < y ? this.algorithm(x, y)! : this.algorithm(y, x)!
     else throw new Error('Failed to generate hash without any inputs.')
   }
 
   /**
    * Get the merkle root
-   * @public
    */
-  get root() {
+  public get root() {
     const topLayer = this.layers[this.layers.length - 1]
     if (!topLayer) throw new Error('Cannot get root without building a tree.')
     if (topLayer.length !== 1) throw new Error('Invalid tree.')
@@ -46,9 +28,9 @@ class MerkleTree {
 
   /**
    * Build a new merkle tree with given leaves
-   * @param {string[]} leaves
+   * @param leaves
    */
-  build(leaves) {
+  private build(leaves: string[]) {
     // delete previous tree
     this.layers.length = 0
 
@@ -64,23 +46,12 @@ class MerkleTree {
     }
   }
 
-  /**
-   * @private
-   * @param {number} index
-   * @param {string[]} layer
-   * @returns {string}
-   */
-  getNeighbor(index, layer) {
+  private getNeighbor(index: number, layer: string[]): string {
     return layer[index % 2 === 0 ? index + 1 : index - 1]
   }
 
-  /**
-   * @public
-   * @param {string} x
-   * @returns {string[]}
-   */
-  generateProof(x) {
-    let index = this.layers[0].indexOf(this.hash(x))
+  public generateProof(x: string): string[] {
+    let index: number = this.layers[0].indexOf(this.hash(x))
     if (index === -1) throw new Error(`Failed to generate proof for ${x}`)
     return this.layers.slice(0, this.layers.length - 1).reduce((accumulator, layer) => {
       const neighbor = this.getNeighbor(index, layer)
@@ -90,13 +61,7 @@ class MerkleTree {
     }, [])
   }
 
-  /**
-   * @public
-   * @param {string[]} proof
-   * @param {string} target
-   * @returns {boolean}
-   */
-  verifyProof(proof, target) {
+  public verifyProof(proof: string[], target: string): boolean {
     let computed_hash = this.hash(target)
     for (let i = 0; i < proof.length; i++) {
       if (computed_hash <= proof[i]) computed_hash = this.combine_hash(computed_hash, proof[i])
@@ -104,8 +69,4 @@ class MerkleTree {
     }
     return computed_hash === this.root
   }
-}
-
-module.exports = {
-  MerkleTree,
 }

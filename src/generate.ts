@@ -1,14 +1,11 @@
-const fs = require('fs')
-const { soliditySha3 } = require('web3-utils')
-const { MerkleTree } = require('./merkleTree')
-const { buf2hex, hex2buf } = require('./helpers')
-const ethers = require('ethers')
+import fs from 'fs'
+import { soliditySha3 } from 'web3-utils'
+import { MerkleTree } from './merkleTree'
+import { buf2hex, hex2buf } from './helpers'
+import { ethers } from 'ethers'
 const abiCoder = new ethers.utils.AbiCoder()
-/**
- * @param {string[]} accounts
- * @returns {string}
- */
-function generate(accounts) {
+
+export function generate(accounts: string[]): string {
   const rawLeaves = accounts.map((address) => ({ address, amount: Math.floor(Math.random() * 100000) }))
   const leaves = rawLeaves.map((v, i) => {
     return {
@@ -24,7 +21,7 @@ function generate(accounts) {
 
   const tree = new MerkleTree(
     leaves.map((l) => buf2hex(l.buf)),
-    soliditySha3,
+    (soliditySha3 as unknown) as (...str: string[]) => string,
   )
 
   const offset = leaves.length - 146
@@ -41,11 +38,7 @@ function generate(accounts) {
   return 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)
 }
 
-/**
- * @param {{ address: string; amount: number }[]} accounts
- * @returns {string}
- */
-function generateReal(accounts) {
+export function generateReal(accounts: { address: string; amount: number }[]): string {
   const leaves = accounts
     .map((v, i) => {
       return {
@@ -62,7 +55,7 @@ function generateReal(accounts) {
 
   const tree = new MerkleTree(
     leaves.map((l) => buf2hex(l.buf)),
-    soliditySha3,
+    (soliditySha3 as unknown) as (...str: string[]) => string,
   )
 
   const leavesWithProof = leaves.map((l) => {
@@ -81,9 +74,4 @@ function generateReal(accounts) {
   }
 
   return 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)
-}
-
-module.exports = {
-  generate,
-  generateReal,
 }
