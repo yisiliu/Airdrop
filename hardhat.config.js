@@ -1,16 +1,14 @@
 require("@nomiclabs/hardhat-waffle")
-require("@nomiclabs/hardhat-web3")
-const Web3 = require('web3')
+
 const fs = require('fs').promises
+const ethers = require('ethers')
 const { generate, generateReal } = require('./src/generate')
 const { rawData } = require('./src/rawData')
-
-const web3 = new Web3()
 
 task("test:prepare_data", "Generate data that required by test", async (taskArguments, hre) => {
   /* As hardhat allows to access its runtime environment variables, 
     we don't need to declare the self-generated accounts as a global variable */
-  const accounts = await ethers.getSigners()
+  const accounts = await hre.ethers.getSigners()
   const template = generate(accounts.map(x => x.address.toLowerCase()))
   await fs.writeFile('./test/generated.js', template)
   console.log('✨ test/generated.js generated')
@@ -42,7 +40,7 @@ module.exports = {
       /* if using ganache + truffle, to handle self-generated accounts,
       you have to write more code to launch server with ganache-core api */
       accounts: [...new Array(300)].map(() => {
-        const { privateKey } = web3.eth.accounts.create()
+        const { privateKey } = ethers.Wallet.createRandom()
         return {
           balance: '0x' + (10 ** 20).toString(16),
           privateKey

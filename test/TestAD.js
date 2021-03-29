@@ -51,8 +51,7 @@ describe("AirDrop", (taskArguments) => {
   })
 
   beforeEach(async () => {
-    snapShot = await takeSnapshot()
-    snapshotId = snapShot['result']
+    snapshotId = await takeSnapshot()
   })
 
   afterEach(async () => {
@@ -287,7 +286,7 @@ describe("AirDrop", (taskArguments) => {
     const logs = await getEventLogs(airdropDeployed.address, claimed_encode, claimed_types, leavesWithProof.length)
     logs.forEach(async (log, i) => {
       const leaf = leavesWithProof[i]
-      expect(BigNumber(log.amount).div(1e18).toFixed(2)).to.be.eq(
+      expect(BigNumber(log.amount.toString()).div(1e18).toFixed(2)).to.be.eq(
         (leaf.amount * shrinkRate).toFixed(2)
       )
     })

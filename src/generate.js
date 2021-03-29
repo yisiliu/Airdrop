@@ -2,22 +2,21 @@ const fs = require('fs')
 const { soliditySha3 } = require('web3-utils')
 const { MerkleTree } = require('./merkleTree')
 const { buf2hex, hex2buf } = require('./helpers')
-const Web3 = require('web3')
-
+const ethers = require('ethers')
+const abiCoder = new ethers.utils.AbiCoder()
 /**
  * @param {string[]} accounts
  * @returns {string}
  */
 function generate(accounts) {
-  const web3 = new Web3()
   const rawLeaves = accounts.map((address) => ({ address, amount: Math.floor(Math.random() * 100000) }))
   const leaves = rawLeaves.map((v, i) => {
     return {
       index: String(i),
       buf: Buffer.concat([
-        hex2buf(web3.eth.abi.encodeParameter('uint256', i)),
+        hex2buf(abiCoder.encode(['uint256'], [i])),
         hex2buf(v.address),
-        hex2buf(web3.eth.abi.encodeParameter('uint256', v.amount)),
+        hex2buf(abiCoder.encode(['uint256'], [v.amount])),
       ]),
       ...v,
     }
@@ -47,14 +46,13 @@ function generate(accounts) {
  * @returns {string}
  */
 function generateReal(accounts) {
-  const web3 = new Web3()
   const leaves = accounts.map((v, i) => {
     return {
       index: String(i),
       buf: Buffer.concat([
-        hex2buf(web3.eth.abi.encodeParameter('uint256', i)),
+        hex2buf(abiCoder.encode.encodeParameter(['uint256'], [i])),
         hex2buf(v.address),
-        hex2buf(web3.eth.abi.encodeParameter('uint256', Number(v.amount.toFixed(0)))),
+        hex2buf(abiCoder.encode.encodeParameter(['uint256'], [Number(v.amount.toFixed(0))])),
       ]),
       ...v
     }
