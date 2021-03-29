@@ -50,9 +50,9 @@ function generateReal(accounts) {
     return {
       index: String(i),
       buf: Buffer.concat([
-        hex2buf(abiCoder.encode.encodeParameter(['uint256'], [i])),
+        hex2buf(abiCoder.encode(['uint256'], [i])),
         hex2buf(v.address),
-        hex2buf(abiCoder.encode.encodeParameter(['uint256'], [Number(v.amount.toFixed(0))])),
+        hex2buf(abiCoder.encode(['uint256'], [Number(v.amount.toFixed(0))])),
       ]),
       ...v
     }
