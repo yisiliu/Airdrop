@@ -2,18 +2,18 @@ import fs from 'fs'
 import { soliditySha3 } from 'web3-utils'
 import { MerkleTree } from './merkleTree'
 import { buf2hex, hex2buf } from './helpers'
-import Web3 from 'web3'
+import { ethers } from 'ethers'
+const abiCoder = new ethers.utils.AbiCoder()
 
 export function generate(accounts: string[]): string {
-  const web3 = new Web3()
   const rawLeaves = accounts.map((address) => ({ address, amount: Math.floor(Math.random() * 100000) }))
   const leaves = rawLeaves.map((v, i) => {
     return {
       index: String(i),
       buf: Buffer.concat([
-        hex2buf(web3.eth.abi.encodeParameter('uint256', i)),
+        hex2buf(abiCoder.encode(['uint256'], [i])),
         hex2buf(v.address),
-        hex2buf(web3.eth.abi.encodeParameter('uint256', v.amount)),
+        hex2buf(abiCoder.encode(['uint256'], [v.amount])),
       ]),
       ...v,
     }
@@ -30,7 +30,7 @@ export function generate(accounts: string[]): string {
       address: l.address,
       proof: tree.generateProof(buf2hex(l.buf)),
       amount: l.amount,
-      index: l.index
+      index: l.index,
     }
   })
   const merkleRoot = tree.root
@@ -38,20 +38,20 @@ export function generate(accounts: string[]): string {
   return 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)
 }
 
-
 export function generateReal(accounts: { address: string; amount: number }[]): string {
-  const web3 = new Web3()
-  const leaves = accounts.map((v, i) => {
-    return {
-      index: String(i),
-      buf: Buffer.concat([
-        hex2buf(web3.eth.abi.encodeParameter('uint256', i)),
-        hex2buf(v.address),
-        hex2buf(web3.eth.abi.encodeParameter('uint256', Number(v.amount.toFixed(0)))),
-      ]),
-      ...v,
-    }
-  }).slice(0, 100)
+  const leaves = accounts
+    .map((v, i) => {
+      return {
+        index: String(i),
+        buf: Buffer.concat([
+          hex2buf(abiCoder.encode(['uint256'], [i])),
+          hex2buf(v.address),
+          hex2buf(abiCoder.encode(['uint256'], [Number(v.amount.toFixed(0))])),
+        ]),
+        ...v,
+      }
+    })
+    .slice(0, 100)
 
   const tree = new MerkleTree(
     leaves.map((l) => buf2hex(l.buf)),
@@ -63,14 +63,14 @@ export function generateReal(accounts: { address: string; amount: number }[]): s
       address: l.address,
       proof: tree.generateProof(buf2hex(l.buf)),
       amount: Number(l.amount.toFixed(0)),
-      index: l.index
+      index: l.index,
     }
   })
 
   const merkleRoot = tree.root
 
   if (process.env.REAL === 'true') {
-    fs.writeFile('data/proofs.json', JSON.stringify({ merkleRoot, leaves: leavesWithProof }, null, 2), () => { })
+    fs.writeFile('data/proofs.json', JSON.stringify({ merkleRoot, leaves: leavesWithProof }, null, 2), () => {})
   }
 
   return 'module.exports = ' + JSON.stringify({ merkleRoot, leavesWithProof }, null, 2)

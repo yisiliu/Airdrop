@@ -2,3 +2,7 @@ node_modules/
 build/
 .DS_Store
 test/generated.js
+
+#Hardhat files
+cache
+artifacts

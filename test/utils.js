@@ -1,22 +1,23 @@
 const { start_time } = require('./constants')
 
+const abiCoder = new ethers.utils.AbiCoder()
 async function getEventLogs(address, encode, type, n = 1) {
-  const latestBlockNumber = await web3.eth.getBlockNumber()
+  const latestBlockNumber = await ethers.provider.getBlockNumber()
   const fromBlockNumber = latestBlockNumber - n
   // await logBlockTimestamp(fromBlockNumber)
   // await logBlockTimestamp(latestBlockNumber)
-  const ralLogs = await web3.eth.getPastLogs({
+  const ralLogs = await ethers.provider.getLogs({
     address,
-    topic: [web3.utils.sha3(encode)],
+    topic: [ethers.utils.keccak256(ethers.utils.toUtf8Bytes(encode))],
     fromBlock: fromBlockNumber,
     toBlock: latestBlockNumber,
   })
-  const logs = ralLogs.map(log => web3.eth.abi.decodeParameters(type, log.data))
+  const logs = ralLogs.map((log) => abiCoder.decode(type, log.data))
   return logs.length === 1 ? logs[0] : logs
 }
 
 async function logBlockTimestamp(blockNumber, debug = false) {
-  const block = await web3.eth.getBlock(blockNumber)
+  const block = await ethers.provider.getBlock()
   const t = Number(block.timestamp)
   if (debug) {
     console.log(`      🐦 Block#${blockNumber} timestamp: ${t} ${new Date(t * 1000)}`)
@@ -25,7 +26,7 @@ async function logBlockTimestamp(blockNumber, debug = false) {
 }
 
 async function logLatestBlockTimestamp() {
-  const blockNumber = await web3.eth.getBlockNumber()
+  const blockNumber = await ethers.provider.getBlockNumber()
   const t = await logBlockTimestamp(blockNumber)
   return t
 }
@@ -37,89 +38,29 @@ async function advanceTimeWithLog(time) {
 }
 
 function getRevertMsg(msg) {
-  return `Returned error: VM Exception while processing transaction: revert ${msg} -- Reason given: ${msg}.`
+  return `VM Exception while processing transaction: revert ${msg}`
 }
 
-function advanceTime(time) {
-  return new Promise((resolve, reject) => {
-    web3.currentProvider.send(
-      {
-        jsonrpc: '2.0',
-        method: 'evm_increaseTime',
-        params: [time],
-        id: new Date().getTime(),
-      },
-      (err, result) => {
-        if (err) {
-          return reject(err)
-        }
-        return resolve(result)
-      },
-    )
-  })
+async function advanceTime(time) {
+  await network.provider.send('evm_increaseTime', [time])
 }
 
-function advanceBlock() {
-  return new Promise((resolve, reject) => {
-    web3.currentProvider.send(
-      {
-        jsonrpc: '2.0',
-        method: 'evm_mine',
-        id: new Date().getTime(),
-      },
-      (err, result) => {
-        if (err) {
-          return reject(err)
-        }
-        const newBlockHash = web3.eth.getBlock('latest').hash
-
-        return resolve(newBlockHash)
-      },
-    )
-  })
+async function advanceBlock() {
+  await network.provider.send('evm_mine', [])
 }
 
-function takeSnapshot() {
-  return new Promise((resolve, reject) => {
-    web3.currentProvider.send(
-      {
-        jsonrpc: '2.0',
-        method: 'evm_snapshot',
-        id: new Date().getTime(),
-      },
-      (err, snapshotId) => {
-        if (err) {
-          return reject(err)
-        }
-        return resolve(snapshotId)
-      },
-    )
-  })
+async function takeSnapshot() {
+  return network.provider.send('evm_snapshot', [])
 }
 
-function revertToSnapShot(id) {
-  return new Promise((resolve, reject) => {
-    web3.currentProvider.send(
-      {
-        jsonrpc: '2.0',
-        method: 'evm_revert',
-        params: [id],
-        id: new Date().getTime(),
-      },
-      (err, result) => {
-        if (err) {
-          return reject(err)
-        }
-        return resolve(result)
-      },
-    )
-  })
+async function revertToSnapShot(id) {
+  await network.provider.send('evm_revert', [id])
 }
 
 async function advanceTimeAndBlock(time) {
   await advanceTime(time)
   await advanceBlock()
-  return Promise.resolve(web3.eth.getBlock('latest'))
+  return Promise.resolve(ethers.provider.getBlock())
 }
 
 module.exports = {
