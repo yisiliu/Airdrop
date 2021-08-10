@@ -80,8 +80,8 @@ contract Airdrop {
         require(MerkleProof.verify(merkleProof, merkleRoot, leaf), 'Not Verified');
         amount *= (10 ** 18);                                                               // 18 decimals
         amount -= (((block.timestamp - info.start_time) / 86400) * 2) * amount / 10;        // -20% per day
-        IERC20(info.token_address).transfer(msg.sender, amount);
         set_claimed(index);
+        IERC20(info.token_address).transfer(msg.sender, amount);
         emit Claimed(amount, block.timestamp); 
     }
 
