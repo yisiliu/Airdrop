@@ -1,10 +1,12 @@
+
+
 # Airdrop
 
 To compile:
 ```
 npx hardhat compile
 ```
-and you will find the artifacts including abi and bytecode in `build/`
+and you will find the artifacts including abi and bytecode in `artifacts/`
 
 To run the test:
 ```
